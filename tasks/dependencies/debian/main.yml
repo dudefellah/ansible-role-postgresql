@@ -1,0 +1,33 @@
+---
+- name: Ensure gpg and apt-key are installed to ingest the repo key
+  ansible.builtin.package:
+    name:
+      - gnupg
+    state: present
+
+- name: Install GPG key for repo
+  ansible.builtin.apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add Pg repo
+  ansible.builtin.apt_repository:
+    repo: "{{ _postgresql_official_debian_repo }}"
+    state: present
+  when:
+    - "_postgresql_official_debian_repo is not none"
+
+- name: Install psycopg2 module if we're doing work on the actual database
+  ansible.builtin.package:
+    name:
+      - "python-psycopg2"
+    state: present
+  when:
+    - >-
+      (postgresql_databases|length > 0) or
+      (postgresql_users|length > 0)
+
+- name: Install package(s)
+  ansible.builtin.package:
+    name: "{{ _postgresql_packages }}"
+    state: present

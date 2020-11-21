@@ -1,0 +1,44 @@
+---
+# vars file for ansible-role-postgresql
+__postgresql_packages:
+  centos:
+    _value:
+      - "postgresql{{ postgresql_version }}-server"
+  debian:
+    _value:
+      - "postgresql-{{ postgresql_version }}"
+
+__postgresql_data_dir:
+  centos:
+    _value: "/var/lib/pgsql/{{ postgresql_version }}/data"
+  debian:
+    _value: "/var/lib/postgresql/{{ postgresql_version }}/main"
+
+__postgresql_service_name:
+  centos:
+    _value: "postgresql-{{ postgresql_version }}"
+  debian:
+    _value: "postgresql"
+
+__postgresql_official_rhel_repo_package:
+  centos:
+    "7":
+      _value: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+    "8":
+      _value: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+
+__postgresql_official_debian_repo:
+  debian:
+    _value: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+
+__postgresql_conf_filename:
+  centos:
+    _value: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
+  debian:
+    _value: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+
+__postgresql_pg_hba_conf_filename:
+  centos:
+    _value: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
+  debian:
+    _value: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"

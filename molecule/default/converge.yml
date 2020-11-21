@@ -1,0 +1,29 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include ansible-role-postgresql"
+      include_role:
+        name: "ansible-role-postgresql"
+      vars:
+        postgresql_version: 11
+        postgresql_no_log: false
+        postgresql_users:
+          - name: test
+            password: abc123
+            encrypted: true
+            state: present
+          - name: test1
+            password: abc123
+            encrypted: true
+            expires: "2030-01-01"
+            state: present
+
+        postgresql_databases:
+          - name: testdb
+            template: template0
+            owner: test
+            state: present
+          - name: testdb2
+            owner: test1
+            state: present

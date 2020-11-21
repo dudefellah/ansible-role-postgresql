@@ -1,0 +1,30 @@
+---
+- name: Install epel
+  ansible.builtin.package:
+    name:
+      - epel-release
+      - glibc-langpack-en.x86_64
+    state: present
+
+- name: Install Pg repository
+  ansible.builtin.yum:
+    name: "{{ _postgresql_official_rhel_repo_package }}"
+    state: installed
+    disable_gpg_check: true
+    update_cache: true
+
+- name: Install psycopg2 module if we're doing work on the actual database
+  ansible.builtin.package:
+    name:
+      "python3-psycopg2"
+    state: present
+  when:
+    - >-
+      (postgresql_databases|length > 0) or
+      (postgresql_users|length > 0)
+
+- name: bbb Install while disabling AppStream (thanks for being annoying CentOS 8)
+  ansible.builtin.package:
+    name: "{{ _postgresql_packages }}"
+    disablerepo: AppStream
+    state: present

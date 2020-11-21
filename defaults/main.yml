@@ -1,0 +1,143 @@
+---
+# defaults file for ansible-role-postgresql
+#
+# When this value is null, the packages required will be determined based
+# on the distribution and supplied. You can add your own list of items
+# here to manually install the packages you'd like. Just be aware that other
+# related files, such as the config files for postgres may need to be specified
+# manually if you're specifying a manual postgres package.
+postgresql_packages: null
+
+# Useful for debugging
+postgresql_no_log: true
+
+# This version number is used to help automatically determine package names
+# and file locations. If you manually set your postgresql packages, you may
+# need to explicitly set your configuration file locations as well so that
+# the automatic detection doesn't make assumptions you don't want. Otherwise,
+# if you're using something similar to the releases available at the officical
+# postgres repositories, then you can probably make use of the version number
+# to automatically generate your other files without specifying where they
+# live.
+postgresql_version: 10
+
+# Local user and group to own postgres files
+postgresql_user: postgres
+postgresql_group: postgres
+
+# Specify the service name manually here, otherwise it will be generated
+# based on the pg version and host distribution
+postgresql_service_name: null
+
+# The state of the postgres service once this role has run
+postgresql_service_state: started
+
+# Determine whether or not the service is enabled
+postgresql_service_enabled: true
+
+# Set to specify the postgres data dir, otherwise it will be determined
+# automatically based on the pg version and distribution
+postgresql_data_dir: null
+
+# Set to false and the repo at www.postgresql.org won't be used.
+#
+# This means that if you specify a postgres version that doesn't exist
+# natively in your distribution, you'll encounter a failure.
+postgresql_official_repo: true
+
+# Set to true if you want to force the play to skip trying to run initdb
+# on the data dir.
+postgresql_rhel_skip_setup: false
+
+# Default package URL to use for installing the official repo in RHEL systems.
+# Will be automatically generated if this value is null, otherwise this
+# value will be used.
+postgresql_official_rhel_repo_package: null
+
+# Default package repo URL for Debian variants. Will be automatically populated
+# if this is null. Otherwise this value will be used.
+postgresql_official_debian_repo: null
+
+# Databases to be included in postgresql
+# Each list element takes the following values which are passed directory to
+# the community.general.postgresql_db module:
+#    name:
+#    lc_collate:
+#    lc_ctype:
+#    encoding:
+#    template:
+#    owner:
+#    state:
+#    conn_limit:
+#
+# The name value is required, other options will use standard defaults except
+# for the 'owner' value which will default to `postgresql_user`
+#
+# Additionally, you can add an "extensions" value as a list to each entry
+# and have those values applied as community.general.postgresql_ext values
+postgresql_databases: []
+
+# Users to add to postgresql
+# Each list element takes the following values which are passed directly to
+# community.general.postgresql_user. password, encrypted, expires and state
+# can all be omitted and the default value for this module will be applied
+#    name:
+#    password:
+#    encrypted:
+#    expires:
+#    state:
+#
+# Be ware that recent versions of psycopg2 won't support "unencrypted"
+# passwords, so passing 'encrypted' as false might cause breakage
+postgresql_users: []
+
+# File to use for the postgresql conf. Will be automatically determined if
+# this value is null.
+postgresql_conf_filename: null
+
+# Key,value values to be passed into postgresql.conf
+# Defaults list the standard values you might find in the default install
+# file.
+# Check the package example file
+# (Eg. https://github.com/postgres/postgres/blob/master/src/backend/utils/misc/postgresql.conf.sample)
+# or other online documentation for a full list of options
+# All, key: value options turn into "key = value" in the configuration
+postgresql_conf: {}
+
+# File to use for the postgresql hba conf. Will be automatically determined if
+# this value is null.
+postgresql_pg_hba_conf_filename: null
+
+postgresql_hba:
+  - type: local
+    database: all
+    user: all
+    method: peer
+  - type: local
+    database: all
+    user: all
+    method: md5
+  - type: host
+    database: all
+    user: all
+    address: 127.0.0.1/32
+    method: ident
+  - type: host
+    database: all
+    user: all
+    address: ::1/128
+    method: ident
+  - type: local
+    database: replication
+    user: all
+    method: peer
+  - type: host
+    database: replication
+    user: all
+    address: 127.0.0.1/32
+    method: ident
+  - type: host
+    database: replication
+    user: all
+    address: "::1/128"
+    method: ident

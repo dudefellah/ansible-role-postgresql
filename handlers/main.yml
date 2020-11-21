@@ -1,0 +1,9 @@
+---
+# handlers file for ansible-role-postgresql
+- name: Reload postgres
+  service:
+    name: "{{ _postgresql_service_name }}"
+    state: reloaded
+  listen: reload postgres
+  when:
+    - "postgresql_service_state in ['started']"

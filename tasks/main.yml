@@ -1,0 +1,133 @@
+---
+# tasks file for ansible-role-postgresql
+- name: Load platform variables
+  ansible.builtin.include_vars:
+    file: "{{ lookup('first_found', vars_files, errors='ignore') }}"
+  vars:
+    vars_files:
+      files:
+        - "{{ role_path }}/vars/{{ ansible_distribution | lower }}/\
+           {{ ansible_distribution_major_version }}.yml"
+        - "{{ role_path }}/vars/{{ ansible_distribution | lower }}/main.yml"
+        - "{{ role_path }}/vars/{{ ansible_os_family | lower }}/main.yml"
+        - "{{ role_path }}/vars/main.yml"
+
+- name: Set up role-specific facts based on some inputs and the OS distribution
+  include_tasks:
+    file: role_facts.yml
+
+- name: Load platform dependencies
+  include_tasks:
+    file: "{{ tasks_filename }}"
+  vars:
+    tasks_files:
+      - "{{ role_path }}/tasks/dependencies/\
+        {{ ansible_distribution | lower }}/\
+        {{ ansible_distribution_major_version }}.yml"
+      - "{{ role_path }}/tasks/dependencies/\
+        {{ ansible_distribution | lower }}/\
+        main.yml"
+      - "{{ role_path }}/tasks/dependencies/\
+        {{ ansible_os_family | lower }}.yml"
+      - "{{ role_path }}/tasks/dependencies/main.yml"
+  loop: "{{ query('first_found', tasks_files, errors='ignore') }}"
+  loop_control:
+    loop_var: tasks_filename
+
+# TODO: This can be cleaned up. On RHEL hosts, the package doesn't install
+# database data by default, so initdb has to be run. Here we'll test to see
+# if there are files in the data dir and run initdb on RHEL hosts if not.
+- name: Check for files in the data dir
+  ansible.builtin.find:
+    path: "{{ _postgresql_data_dir }}"
+  register: data_dir_files
+
+- name: Init db if needed
+  command: "postgresql-{{ postgresql_version }}-setup initdb"
+  when:
+    - "not postgresql_rhel_skip_setup|bool"
+    - "ansible_distribution in ['CentOS']"
+    - "data_dir_files.files|length == 0"
+
+- name: Install postgres configuration when config values are set
+  ansible.builtin.template:
+    src: etc/postgresql.conf.j2
+    dest: "{{ _postgresql_conf_filename }}"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    mode: "0644"
+  notify: reload postgres
+  when:
+    - "postgresql_conf|bool"
+
+- name: Install postgres hba configuration
+  ansible.builtin.template:
+    src: etc/pg_hba.conf.j2
+    dest: "{{ _postgresql_pg_hba_conf_filename }}"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    mode: "0644"
+  notify: reload postgres
+
+- name: Set service state
+  ansible.builtin.service:
+    name: "{{ _postgresql_service_name }}"
+    state: "{{ postgresql_service_state }}"
+    enabled: "{{ postgresql_service_enabled }}"
+
+- name: Ensure PostgreSQL users are present
+  ansible.builtin.postgresql_user:
+    name: "{{ pg_user.name }}"
+    password: "{{ pg_user.password | default(omit) }}"
+    encrypted: "{{ pg_user.encrypted | default(true) }}"
+    expires: "{{ pg_user.expires | default(omit) }}"
+    state: "{{ pg_user.state | default(omit) }}"
+    priv: "{{ pg_user.priv | default(omit) }}"
+    role_attr_flags: "{{ pg_user.role_attr_flags | default(omit) }}"
+    fail_on_user: "{{ pg_user.fail_on_user | default(omit) }}"
+  no_log: "{{ postgresql_no_log }}"
+  loop: "{{ postgresql_users }}"
+  loop_control:
+    loop_var: pg_user
+  become: true
+  become_user: "{{ postgresql_user }}"
+
+- name: Ensure PostgreSQL databases are present.
+  ansible.builtin.postgresql_db:
+    name: "{{ pg_db.name }}"
+    lc_collate: "{{ pg_db.lc_collate | default(omit) }}"
+    lc_ctype: "{{ pg_db.lc_ctype | default(omit) }}"
+    encoding: "{{ pg_db.encoding | default(omit) }}"
+    template: "{{ pg_db.template | default(omit) }}"
+    owner: "{{ pg_db.owner | default(postgresql_user) }}"
+    state: "{{ pg_db.state | default(omit) }}"
+    conn_limit: "{{ pg_db.conn_limit | default(omit) }}"
+  loop: "{{ postgresql_databases }}"
+  loop_control:
+    loop_var: pg_db
+  become: true
+  become_user: "{{ postgresql_user }}"
+
+- name: Setup PostgreSQL databases extension
+  ansible.builtin.postgresql_ext:
+    db: "{{ pg_db_extension.0.name }}"
+    name: "{{ pg_db_extension.1 | default(omit) }}"
+  loop: >-
+    {{ postgresql_databases | subelements('extension', skip_missing=True) }}
+  loop_control:
+    loop_var: pg_db_extension
+  become: true
+  become_user: "{{ postgresql_user }}"
+
+- name: Ensure PostgreSQL users GRANT are present
+  ansible.builtin.postgresql_user:
+    name: "{{ pg_user.name }}"
+    conn_limit: "{{ pg_user.conn_limit | default(omit) }}"
+    priv: "{{ pg_user.priv | default(omit) }}"
+    role_attr_flags: "{{ pg_user.role_attr_flags | default(omit) }}"
+    db: "{{ pg_user.db | default(omit) }}"
+  loop: "{{ postgresql_users }}"
+  loop_control:
+    loop_var: pg_user
+  become: true
+  become_user: "{{ postgresql_user }}"
