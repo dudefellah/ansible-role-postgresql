@@ -7,18 +7,7 @@
 
 - name: Install Pg repository
   ansible.builtin.yum:
-    name: >-
-      {{ postgresql_official_rhel_repo_package is not none |
-         ternary(
-           postgresql_official_rhel_repo_package,
-           lookup(
-             'vars',
-             'postgresql_official_' +
-               ansible_distribution|lower +
-               ansible_distribution_major_version|string +
-               '_repo_package'
-           )
-         ) }}
+    name: "{{ _postgresql_repo_package }}"
     state: installed
     disable_gpg_check: true
 
