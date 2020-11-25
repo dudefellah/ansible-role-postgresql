@@ -108,6 +108,12 @@ postgresql_conf: {}
 # this value is null.
 postgresql_pg_hba_conf_filename: null
 
+# Entries for pg_hba.conf. Available fields for each list entry are:
+#              type:
+#              database:
+#              user:
+# (optional)   address:
+#              method:
 postgresql_hba:
   - type: local
     database: all
