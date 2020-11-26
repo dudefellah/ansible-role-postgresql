@@ -114,7 +114,7 @@ postgresql_pg_hba_conf_filename: null
 #              user:
 # (optional)   address:
 #              method:
-postgresql_hba:
+postgresql_pg_hba_conf:
   - type: local
     database: all
     user: all

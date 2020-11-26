@@ -58,7 +58,7 @@
     mode: "0644"
   notify: reload postgres
   when:
-    - "postgresql_conf|bool"
+    - "postgresql_conf is not none"
 
 - name: Install postgres hba configuration
   ansible.builtin.template:
@@ -68,12 +68,22 @@
     group: "{{ postgresql_group }}"
     mode: "0644"
   notify: reload postgres
+  when:
+    - "postgresql_pg_hba_conf is not none"
 
 - name: Set service state
   ansible.builtin.service:
     name: "{{ _postgresql_service_name }}"
     state: "{{ postgresql_service_state }}"
+  when:
+    - "postgresql_service_state is not none"
+
+- name: Enable service
+  ansible.builtin.service:
+    name: "{{ _postgresql_service_name }}"
     enabled: "{{ postgresql_service_enabled }}"
+  when:
+    - "postgresql_service_enabled is not none"
 
 - name: Ensure PostgreSQL users are present
   ansible.builtin.postgresql_user:

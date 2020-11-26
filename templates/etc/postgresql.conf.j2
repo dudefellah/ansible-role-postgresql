@@ -1,5 +1,11 @@
 # {{ ansible_managed }}
 
 {% for k in postgresql_conf %}
-{{ k }} = {{ postgresql_conf[k] | quote }}
+{% if postgresql_conf[k] is sameas true %}
+{{ k }} = yes
+{% elif postgresql_conf[k] is sameas false %}
+{{ k }} = no
+{% else %}
+{{ k }} = '{{ postgresql_conf[k] }}'
+{% endif %}
 {% endfor %}

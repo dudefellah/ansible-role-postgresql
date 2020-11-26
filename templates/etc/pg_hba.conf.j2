@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
-{% for pg_hba in postgresql_hba %}
+{% for pg_hba in postgresql_pg_hba_conf %}
 {{ pg_hba.type }}  {{ pg_hba.database }} {{ pg_hba.user }} {{ pg_hba.address | default('') }} {{ pg_hba.method }}
 {% endfor %}
