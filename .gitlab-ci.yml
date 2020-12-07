@@ -10,7 +10,11 @@ include:
 molecule:
   stage: test
   extends: .ansible_molecule
+  tags:
+    - docker-socket-runner
 
 publish:
   stage: publish
   extends: .ansible_galaxy_publish
+  tags:
+    - docker-socket-runner
