@@ -23,8 +23,11 @@
       (postgresql_databases|length > 0) or
       (postgresql_users|length > 0)
 
+- name: Disable built-in postgres
+  command: dnf -qy module disable postgresql
+  changed_when: false
+
 - name: Install Pg repo packages
   ansible.builtin.package:
     name: "{{ _postgresql_packages }}"
-    disablerepo: AppStream
     state: present

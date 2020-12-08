@@ -3,6 +3,7 @@
 __postgresql_packages:
   centos:
     _value:
+      - "postgresql{{ postgresql_version }}"
       - "postgresql{{ postgresql_version }}-server"
   debian:
     _value:
