@@ -2,6 +2,17 @@
 - name: Converge
   hosts: all
   tasks:
+    - name: Set data dir fact
+      set_fact:
+        _data_dir: >-
+          {%- if ansible_distribution == 'CentOS' -%}
+            /var/lib/pgsql/11/data
+          {%- elif ansible_distribution == 'Debian' -%}
+            /var/lib/postgresql/11/main
+          {%- else -%}
+            {{ none }}
+          {%- endif -%}
+
     - name: "Include ansible-role-postgresql"
       include_role:
         name: "ansible-role-postgresql"
@@ -27,3 +38,7 @@
           - name: testdb2
             owner: test1
             state: present
+
+        postgresql_data_dir: "{{ _data_dir }}"
+        postgresql_conf:
+          data_directory: "{{ _data_dir }}"
