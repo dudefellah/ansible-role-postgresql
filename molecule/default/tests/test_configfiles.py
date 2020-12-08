@@ -13,10 +13,10 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 def test_config_files(host):
     pg_version = 11
-    pg_conf_filename = "/etc/postgresql/{version}/postgresql.conf".format(
+    pg_conf_filename = "/etc/postgresql/{version}/main/postgresql.conf".format(
         version=pg_version
     )
-    pg_hba_filename = "/etc/postgresql/{version}/pg_hba.conf".format(
+    pg_hba_filename = "/etc/postgresql/{version}/main/pg_hba.conf".format(
         version=pg_version
     )
 
