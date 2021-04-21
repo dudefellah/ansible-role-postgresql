@@ -102,7 +102,7 @@ postgresql_conf_filename: null
 # (Eg. https://github.com/postgres/postgres/blob/master/src/backend/utils/misc/postgresql.conf.sample)
 # or other online documentation for a full list of options
 # All, key: value options turn into "key = value" in the configuration
-postgresql_conf: {}
+postgresql_conf: null
 
 # File to use for the postgresql hba conf. Will be automatically determined if
 # this value is null.
