@@ -95,6 +95,10 @@
     priv: "{{ pg_user.priv | default(omit) }}"
     role_attr_flags: "{{ pg_user.role_attr_flags | default(omit) }}"
     fail_on_user: "{{ pg_user.fail_on_user | default(omit) }}"
+    login_host: "{{ pg_user.login_host | default(omit) }}"
+    login_password: "{{ pg_user.login_password | default(omit) }}"
+    login_unix_socket: "{{ pg_user.login_unix_socket | default(omit) }}"
+    login_user: "{{ pg_user.login_user | default(omit) }}"
   no_log: "{{ postgresql_no_log }}"
   loop: "{{ postgresql_users }}"
   loop_control:
