@@ -28,35 +28,17 @@ platforms:
     volumes:
      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     command: /usr/sbin/init
-  - name: postgresql-molecule-debian-buster-instance
-    image: python:3-buster
-    #    pre_build_image: true
-    privileged: true
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  - name: postgresql-molecule-debian-stretch-instance
-    image: python:3-stretch
-#    pre_build_image: true
-    privileged: true
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-#  - name: postgresql-molecule-ubuntu-20-04-instance
-#    image: ubuntu:20.04
-#    pre_build_image: true
+#  - name: postgresql-molecule-debian-buster-instance
+#    image: python:3-buster
+#    privileged: true
 #    tmpfs:
 #      - /run
 #      - /tmp
 #    volumes:
 #      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-#  - name: postgresql-molecule-ubuntu-20-10-instance
-#    image: ubuntu:20.10
-#    pre_build_image: true
+#  - name: postgresql-molecule-debian-stretch-instance
+#    image: python:3-stretch
+#    privileged: true
 #    tmpfs:
 #      - /run
 #      - /tmp
@@ -67,10 +49,11 @@ provisioner:
   dockerfile: ../resources/playbooks/Dockerfile.j2
   playbooks:
     prepare: prepare.yml
-#  inventory:
-#    group_vars:
-#      # setting for the platform instance named 'instance'
-#      all:
-#        ansible_user: ansible
+  inventory:
+    host_vars:
+      postgresql-molecule-debian-buster-instance:
+        postgresql_service_state: null
+      postgresql-molecule-debian-stretch-instance:
+        postgresql_service_state: null
 verifier:
   name: testinfra
