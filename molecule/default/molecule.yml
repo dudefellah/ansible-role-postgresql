@@ -10,7 +10,6 @@ lint: |
 platforms:
   - name: postgresql-molecule-centos-7-instance
     image: "centos:centos7"
-    #    pre_build_image: true
     privileged: true
     tmpfs:
       - /run
@@ -20,7 +19,6 @@ platforms:
     command: /usr/sbin/init
   - name: postgresql-molecule-centos-8-instance
     image: "centos:centos8"
-    #    pre_build_image: true
     privileged: true
     tmpfs:
      - /run

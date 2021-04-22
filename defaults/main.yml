@@ -91,6 +91,37 @@ postgresql_databases: []
 # passwords, so passing 'encrypted' as false might cause breakage
 postgresql_users: []
 
+# Privileges to set with the the posgresql_privs module:
+# https://docs.ansible.com/ansible/latest/collections/community/postgresql/postgresql_privs_module.html#
+#
+# Each list element takes the following values and passes them to the
+# postgresql_privs module:
+#     ca_cert:
+#     database:
+#     fail_on_role:
+#     grant_option:
+#     host:
+#     login:
+#     login_host:
+#     login_password:
+#     login_unix_socket:
+#     login_user:
+#     objs:
+#     password:
+#     port:
+#     privs:
+#     roles:
+#     schema:
+#     session_role:
+#     ssl_mode:
+#     state:
+#     target_roles:
+#     trust_input:
+#     type:
+#     unix_socket:
+#     usage_on_types:
+postgresql_privs: []
+
 # File to use for the postgresql conf. Will be automatically determined if
 # this value is null.
 postgresql_conf_filename: null

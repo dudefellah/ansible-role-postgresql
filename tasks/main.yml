@@ -140,8 +140,46 @@
     priv: "{{ pg_user.priv | default(omit) }}"
     role_attr_flags: "{{ pg_user.role_attr_flags | default(omit) }}"
     db: "{{ pg_user.db | default(omit) }}"
+    login_host: "{{ pg_user.login_host | default(omit) }}"
+    login_password: "{{ pg_user.login_password | default(omit) }}"
+    login_unix_socket: "{{ pg_user.login_unix_socket | default(omit) }}"
+    login_user: "{{ pg_user.login_user | default(omit) }}"
+  no_log: "{{ postgresql_no_log }}"
   loop: "{{ postgresql_users }}"
   loop_control:
     loop_var: pg_user
+  become: true
+  become_user: "{{ postgresql_user }}"
+
+- name: Set user privileges
+  ansible.builtin.postgresql_privs:
+    database: "{{ pg_priv.database }}"
+    roles: "{{ pg_priv.roles }}"
+    ca_cert: "{{ pg_priv.ca_cert | default(omit) }}"
+    fail_on_role: "{{ pg_priv.fail_on_role | default(omit) }}"
+    grant_option: "{{ pg_priv.grant_option | default(omit) }}"
+    host: "{{ pg_priv.host | default(omit) }}"
+    login: "{{ pg_priv.login | default(omit) }}"
+    login_host: "{{ pg_priv.login_host | default(omit) }}"
+    login_password: "{{ pg_priv.login_password | default(omit) }}"
+    login_unix_socket: "{{ pg_priv.login_unix_socket | default(omit) }}"
+    login_user: "{{ pg_priv.login_user | default(omit) }}"
+    objs: "{{ pg_priv.objs | default(omit) }}"
+    password: "{{ pg_priv.password | default(omit) }}"
+    port: "{{ pg_priv.port | default(omit) }}"
+    privs: "{{ pg_priv.privs | default(omit) }}"
+    schema: "{{ pg_priv.schema | default(omit) }}"
+    session_role: "{{ pg_priv.session_role | default(omit) }}"
+    ssl_mode: "{{ pg_priv.ssl_mode | default(omit) }}"
+    state: "{{ pg_priv.state | default(omit) }}"
+    target_roles: "{{ pg_priv.target_roles | default(omit) }}"
+    trust_input: "{{ pg_priv.trust_input | default(omit) }}"
+    type: "{{ pg_priv.type | default(omit) }}"
+    unix_socket: "{{ pg_priv.unix_socket | default(omit) }}"
+    usage_on_types: "{{ pg_priv.usage_on_types | default(omit) }}"
+  no_log: "{{ postgresql_no_log }}"
+  loop: "{{ postgresql_privs }}"
+  loop_control:
+    loop_var: pg_priv
   become: true
   become_user: "{{ postgresql_user }}"

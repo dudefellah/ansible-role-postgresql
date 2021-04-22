@@ -39,6 +39,12 @@
             owner: test1
             state: present
 
+        postgresql_privs:
+          - database: testdb
+            roles: test
+            privs: ALL
+            type: database
+
         postgresql_data_dir: "{{ _data_dir }}"
         postgresql_conf:
           data_directory: "{{ _data_dir }}"
