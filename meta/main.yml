@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: postgresql
-  author: Dan Thomson
+  author: dudefellah
   description: Install, configure and prepare a PostgreSQL server.
 
   # If the issue tracker for your role is not on github, uncomment the

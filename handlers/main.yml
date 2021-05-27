@@ -3,7 +3,7 @@
 - name: Reload postgres
   service:
     name: "{{ _postgresql_service_name }}"
-    state: reloaded
+    state: "{{ postgresql_service_reload_state }}"
   listen: reload postgres
   when:
     - "postgresql_service_state in ['started']"

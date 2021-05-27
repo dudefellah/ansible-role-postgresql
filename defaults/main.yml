@@ -35,6 +35,10 @@ postgresql_service_state: started
 # Determine whether or not the service is enabled
 postgresql_service_enabled: true
 
+# Set this state in the handler on a 'reload'. It might make sense to set
+# this to "restarted" in some cases.
+postgresql_service_reload_state: reloaded
+
 # Set to specify the postgres data dir, otherwise it will be determined
 # automatically based on the pg version and distribution
 postgresql_data_dir: null
